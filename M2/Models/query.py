@@ -18,7 +18,7 @@ class Query:
            token_inverted_index = self.database.findById("Inverted_index",token)
            if token_inverted_index == None:
                 continue
-           df = token_inverted_index["data"]["df"]
+           df = len(token_inverted_index["data"])
 
            idf = math.log10(total_doc/df)
            tf_wt = math.log10(tf[token]) + 1
@@ -31,7 +31,7 @@ class Query:
         nl = {}
 
         for token in wt:
-            nl[token] = wt[token]/math.log10(query_len)
+            nl[token] = wt[token]/query_len
 
         return nl
 
@@ -72,6 +72,7 @@ class Query:
 
         results = {}
 
+        # cosine similarity 
         for token in query_nl:
             print(token)
             token_inverted_index = self.database.findById("Inverted_index",token)
@@ -79,13 +80,16 @@ class Query:
                 continue
             data = token_inverted_index["data"]
 
-            # print(data)
-            for doc in data["docs"]:
-                if doc["dID"] in results:
-                    results[doc["dID"]] += (query_nl[token] * doc["nl"])
+            for doc_id in data:
+                doc = data[doc_id]
+                if doc_id in results:
+                    results[doc_id] += (query_nl[token] * doc["nl"])*0.4
                 else:
-                    results[doc["dID"]] = (query_nl[token] * doc["nl"])
+                    results[doc_id] = (query_nl[token] * doc["nl"])*0.4
 
+                results[doc_id] += (doc["imp"]/10)*0.2
+
+        # bigram cosine similarity
         for token in bigram_query_nl:
             token_inverted_index = self.database.findById("Bigram_index", token)
             if token_inverted_index == None:
@@ -93,31 +97,15 @@ class Query:
             data = token_inverted_index["data"]
 
             for doc in data:
-                # print("doc is",doc)
                 if doc in results:
-                    results[doc] += (bigram_query_nl[token] * data[doc])
+                    results[doc] += (bigram_query_nl[token] * data[doc])*0.4
                 else:
-                    results[doc] = (bigram_query_nl[token] * data[doc])
-
+                    results[doc] = (bigram_query_nl[token] * data[doc])*0.4
 
         return dict(sorted(results.items(), key=lambda item: item[1],reverse=True))
 
 
-    # def findRankedResults(self):
-    #     query_nl = self.create_tf_idf()
-
-    #     results = {}
-
-    #     for token in query_nl:
-    #         print(token)
-    #         data = self.database.findById("Inverted_index",token)["data"]
-    #         # print(data)
-    #         for doc in data["docs"]:
-    #             if doc["dID"] in results:
-    #                 results[doc["dID"]] += (query_nl[token] * doc["nl"])
-    #             else:
-    #                 results[doc["dID"]] = (query_nl[token] * doc["nl"])
-    #     return dict(sorted(results.items(), key=lambda item: item[1],reverse=True))
+   
     
     
     

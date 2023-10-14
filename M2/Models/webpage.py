@@ -27,7 +27,6 @@ class Webpage:
     def readDoc(self):
         folder_number = self.dID.split("/")[0]
         file_number = self.dID.split("/")[1]
-        # print(f"{folder_number}/{file_number}")
         # open doc and parse it
         with open(f"{webpages_path}/{folder_number}/{file_number}","rb") as doc:
             html_content = doc.read()
@@ -49,4 +48,5 @@ class Webpage:
     def getDescription(self):
         if self.tree == None:
             return "No Description"
-        return " ".join(self.tree.xpath("//text()[normalize-space() and not(ancestor::style) and not(ancestor::script)and not(title)]"))[0:150]
+        return " ".join(self.tree.xpath("//text()[normalize-space() and not(ancestor::style) and not(ancestor::script) and not(ancestor::title) and not(title) ]"))[0:150]
+        

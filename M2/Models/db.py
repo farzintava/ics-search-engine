@@ -17,11 +17,3 @@ class Database:
         collection = self.database[collection_name]
         result = collection.find_one({"_id":id})
         return result
-
-    def replaceById(self,collection_name,id,document):
-        collection = self.database[collection_name]
-        collection.replace_one({"_id":id},document)
-    
-    def insertOne(self,collection_name,document):
-        collection = self.database[collection_name]
-        result = collection.insert_one(document)

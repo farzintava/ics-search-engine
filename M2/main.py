@@ -20,7 +20,7 @@ def home():
 
 @app.route('/search', methods=['POST','GET'])
 def search():
-
+    num_page = 20
     page = request.args.get('page', 0, type=int)
 
     if page == 0:
@@ -30,12 +30,12 @@ def search():
         query = request.args.get('query',type=str)
     
     dIDs = Query(query, database).findRankedResults()
-    max_page = round(len(dIDs)/10)
+    max_page = round(len(dIDs)/num_page)
     
 
 
-    start = (page-1)*10
-    end = (start + 10) if page < max_page else len(dIDs)
+    start = (page-1)*num_page
+    end = (start + num_page) if page < max_page else len(dIDs)
 
     prev = page - 1 if page > 1 else None
     next = page + 1 if page < max_page else None
@@ -52,7 +52,7 @@ def search():
 def page(folder,file):
     wp = Webpage(f"{folder}/{file}")
     try:
-        resp = requests.get("https://"+wp.getURL(),timeout= 5)
+        resp = requests.get("https://"+wp.getURL(),timeout= 2)
         response = redirect("https://"+wp.getURL())
     except Exception:
         content = wp.getContent().decode()

@@ -8,7 +8,7 @@ from nltk.tokenize import word_tokenize
 def tokenize(text):
     text = text.lower()
     stop_words = set(stopwords.words('english'))
-    return [token for token in word_tokenize(text) if not token in stop_words and token.isascii()]
+    return [token for token in word_tokenize(text) if not token in stop_words and token.isascii() and token.isalnum()]
     
 
 def lemmatize(tokens):
